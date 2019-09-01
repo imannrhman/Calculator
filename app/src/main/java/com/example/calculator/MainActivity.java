@@ -19,6 +19,7 @@ Button button1,button2,button3,button4,button5,button6,button7,button8,button9,b
     ArrayList<Integer> tempOperator = new ArrayList<>();
     Boolean jadiDouble = false;
     Boolean sudah= false;
+    Boolean janganTuker =false;
     String angka = "";
     String angka1 = "" ;
     @Override
@@ -51,6 +52,7 @@ Button button1,button2,button3,button4,button5,button6,button7,button8,button9,b
                 tvAngka = (TextView)findViewById(R.id.tv_angka);
                 tvAngka.setText("0");
                 angka = "";
+                tempOperator.clear();
                 angka1 = "";
                 jadiDouble = false;
                 tempAngka.clear();
@@ -144,17 +146,19 @@ Button button1,button2,button3,button4,button5,button6,button7,button8,button9,b
                 }
                 break;
             case R.id.btn_kurang:
-                if(angka.isEmpty() || angka1.isEmpty()||sudah){
+                if( angka1.isEmpty()||sudah){
                     angka = angka + "";
                     angka1 ="0";
-                }else{
+                }
+                else{
                 tvAngka.setText(angka + buttonKurang.getText().toString());
                 angka = angka + buttonKurang.getText().toString();
                 sudah =true;
                 tempAngka.add(Double.parseDouble(angka1));
                 tempOperasi.add("-");
-                angka1 = "";}
                 tempOperator.add(1);
+                angka1 = "";}
+
                 break;
             case R.id.btn_bagi:
                 if(angka.isEmpty() || angka1.isEmpty()||sudah){
@@ -186,6 +190,7 @@ Button button1,button2,button3,button4,button5,button6,button7,button8,button9,b
                 break;
             case R.id.btn_samadengan:
                 String hasilnya = tvAngka.getText().toString();
+                angka1 = validasiAngka(tempOperasi.get(tempOperasi.size()-1),angka1);
                 if(tempOperasi.size()>0){
                     tempAngka.add(Double.parseDouble(angka1));
                     hasil();
@@ -199,11 +204,13 @@ Button button1,button2,button3,button4,button5,button6,button7,button8,button9,b
                     angka1 = validasiAngka(tempOperasi.get(tempOperasi.size()-1),angka1);
                    int hasil = hasil().intValue();
                     hasilnya = String.valueOf(hasil);
-                }}
+
+
+                    }}
                 tvAngka.setText(hasilnya);
                 tempAngka.clear();
                 tempOperasi.clear();
-                Log.d("gf",String.valueOf(tempAngka.size()));
+                tempOperator.clear();
                 angka= "";
                 angka1="";
                 break;
@@ -226,12 +233,12 @@ Button button1,button2,button3,button4,button5,button6,button7,button8,button9,b
         if (angka1.equals("")){
             if(operasi.equals("+")){
                 angka1 = "0";
-            } if(operasi.equals("-")){
+            }else if(operasi.equals("-")){
                 angka1 = "0";
-            } if(operasi.equals("*")){
+            }else if(operasi.equals("*")){
                 angka1 = "1";
             }
-            if(operasi.equals("/")){
+            else if(operasi.equals("/")){
                 angka1 = "1";
             }
         }
@@ -239,24 +246,72 @@ Button button1,button2,button3,button4,button5,button6,button7,button8,button9,b
 
     }
 
+    private void bubbleSort(){
+        String temp = "";
+        int temp1 ;
+        double temp2 = 0.0;
+        double temp3 = 0.0;
+        for(int i = 0 ; i < tempOperasi.size();i++){
+            for (int j = i + 1; j < tempOperasi.size(); j++) {
+                if (tempOperator.get(i) < tempOperator.get(j)) {
+                   if(janganTuker){
+                       temp2 = tempAngka.get(j).doubleValue();
+                       tempAngka.set(j, tempAngka.get(j+1));
+                       tempAngka.set(j+1,temp2);
+
+                   }else{
+                       temp2 = tempAngka.get(i).doubleValue();
+                       tempAngka.set(i, tempAngka.get(j));
+                       tempAngka.set(j,temp2);
+                       temp2 = tempAngka.get(j).doubleValue();
+                       tempAngka.set(i+1, tempAngka.get(j + 1));
+                       tempAngka.set(j + 1, temp2);
+
+                   }
+
+                    temp1 = tempOperator.get(i);
+                    tempOperator.set(i, tempOperator.get(j));
+                    tempOperator.set(j, temp1);
+
+                    temp = tempOperasi.get(i);
+                    tempOperasi.set(i, tempOperasi.get(j));
+                    tempOperasi.set(j, temp);
+
+                    janganTuker =true;
+                }
+            }
+        }
+        janganTuker = false;
+    }
+
     private Double hasil(){
         Double hasil = Double.parseDouble(tempAngka.get(0).toString());
-            for (int j = 0 ; j < tempOperasi.size();j++){
+        double temp3 = 0.0;
+        int simpan= 0;
+
+
+        bubbleSort();
+
+        Log.d("cekangka",tempAngka.get(1).toString());
+        for (int j = 0 ; j < tempOperasi.size();j++){
                int tambah = 1;
                 if (tempOperasi.size() == tempAngka.size()){
                     tambah = 0;
                 }
 
                 if (tempOperasi.get(j).equals("+")){
-                       hasil = hasil + Double.parseDouble(tempAngka.get(j+tambah).toString());
+                       hasil = hasil +tempAngka.get(j+tambah).doubleValue();
 
                 }
                  else if(tempOperasi.get(j).equals("-")){
-                    hasil = hasil - Double.parseDouble(tempAngka.get(j+tambah).toString());
+                    hasil = hasil - tempAngka.get(j+tambah).doubleValue();
                 }
                 else if (tempOperasi.get(j).equals("/")){
-                    hasil = hasil / Double.parseDouble(tempAngka.get(j+tambah).toString());
-                    Boolean cek = hasil.doubleValue() > hasil.intValue();
+                    hasil = hasil / tempAngka.get(j+tambah).doubleValue();
+                       Boolean cek = hasil.doubleValue() > hasil.intValue();
+
+                       Log.d("hasil",String.valueOf(hasil));
+
 
                     if (cek){
                         jadiDouble = true;
@@ -264,8 +319,8 @@ Button button1,button2,button3,button4,button5,button6,button7,button8,button9,b
 
                 }
                 else if(tempOperasi.get(j).equals("*")){
-                    hasil = hasil * Double.parseDouble(tempAngka.get(j+tambah).toString());
-                }
+                    hasil = hasil * tempAngka.get(j+tambah).doubleValue();
+                   }
             }
 
         return hasil;
