@@ -310,7 +310,6 @@ Button button1,button2,button3,button4,button5,button6,button7,button8,button9,b
                     hasil = hasil / tempAngka.get(j+tambah).doubleValue();
                        Boolean cek = hasil.doubleValue() > hasil.intValue();
 
-                       Log.d("hasil",String.valueOf(hasil));
 
 
                     if (cek){
